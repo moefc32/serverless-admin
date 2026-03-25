@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/noto-sans';
+
+@plugin 'daisyui' {
+    exclude: rootscrollgutter;
+}
+
+@plugin "daisyui/theme" {
+    name: "light";
+    --color-error-content: var(--color-white);
+}
+
+@plugin "daisyui/theme" {
+    name: "dark";
+    --color-error-content: var(--color-white);
+}
+
+body {
+    font-family: 'Noto Sans Variable', sans-serif;
+}
+
+input::-ms-reveal,
+input::-ms-clear,
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button {
+    display: none;
+}
+
+.important {
+    display: inline-block;
+}
+
+.important::after {
+    content: '*';
+    color: var(--color-red-500);
+}

@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+
+const { pageTitle } = Astro.props;
+
+const siteTitle = `${import.meta.env.PUBLIC_APP_NAME} | Faizal Chan's Website`;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="/og.png" />
+
+        <title>
+            {pageTitle ? `${pageTitle} | ${siteTitle}` : siteTitle}
+        </title>
+        <meta name="generator" content={Astro.generator} />
+
+        <script
+            src="https://www.googletagmanager.com/gtag/js?id=UA-131278165-1"
+            async></script>
+        <script is:inline>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+
+            gtag('js', new Date());
+            gtag('config', 'UA-131278165-1');
+        </script>
+    </head>
+
+    <body
+        class="flex flex-col w-full min-h-screen overflow-auto"
+        data-theme="light"
+    >
+        <div style="display: contents">
+            <slot />
+        </div>
+    </body>
+</html>

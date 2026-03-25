@@ -1,0 +1,34 @@
+{
+    "name": "serverless-admin",
+    "private": true,
+    "version": "0.0.1",
+    "type": "module",
+    "scripts": {
+        "dev": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview",
+        "deploy": "test -f .env && (astro build && wrangler deploy) || echo 'Error occured, deploy aborted!'"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.2.2",
+        "daisyui": "^5.5.19",
+        "tailwindcss": "^4.2.2"
+    },
+    "dependencies": {
+        "@astrojs/cloudflare": "^13.1.3",
+        "@astrojs/svelte": "^8.0.3",
+        "@fontsource-variable/noto-sans": "^5.2.10",
+        "astro": "^6.0.8",
+        "ky": "^1.14.3",
+        "lucide-svelte": "^0.563.0",
+        "svelte": "^5.55.0",
+        "svelte-sonner": "^1.1.0"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild",
+            "sharp",
+            "workerd"
+        ]
+    }
+}
