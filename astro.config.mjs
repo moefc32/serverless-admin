@@ -13,12 +13,6 @@ export default defineConfig({
         plugins: [
             tailwindcss(),
         ],
-        resolve: {
-            noExternal: [
-                'lucide-svelte',
-                'svelte-sonner',
-            ],
-        },
     },
     integrations: [
         svelte(),

@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LoginForm from '../components/LoginForm.svelte';
+
+const pageTitle = 'Login';
+---
+
+<Layout {pageTitle}>
+    <LoginForm client:only="svelte" />
+</Layout>
