@@ -1,8 +1,54 @@
-export async function POST({ request }) {
-    const body = await request.json();
-    const { email, password } = body;
+import { env } from 'cloudflare:workers';
 
-    if (!email || !password) {
+const JWT_EXPIRATION = 60 * 60;
+const IS_SECURE = import.meta.env.PROD;
+
+function base64urlEncode(buffer) {
+    return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+}
+
+async function hashPassword(account, password, iterations = 100_000) {
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+        'raw', enc.encode(password),
+        { name: 'PBKDF2' }, false, ['deriveBits']
+    );
+    const bits = await crypto.subtle.deriveBits(
+        {
+            name: 'PBKDF2', salt: enc.encode(account),
+            iterations, hash: 'SHA-256'
+        }, key, 256);
+
+    return base64urlEncode(bits);
+}
+
+async function signJWT(payload) {
+    const enc = new TextEncoder();
+    const header = { alg: 'HS256', typ: 'JWT' };
+    const headerB64 = base64urlEncode(enc.encode(JSON.stringify(header)));
+    const payloadB64 = base64urlEncode(enc.encode(JSON.stringify(payload)));
+    const data = headerB64 + '.' + payloadB64;
+
+    const key = await crypto.subtle.importKey(
+        'raw', enc.encode(env.JWT_SECRET),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false, ['sign']
+    );
+
+    const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
+    const sigB64 = base64urlEncode(sig);
+
+    return `${headerB64}.${payloadB64}.${sigB64}`;
+}
+
+export async function POST({ cookies, request }) {
+    const body = await request.json();
+    const { account, password } = body;
+
+    if (!account || !password) {
         return new Response(JSON.stringify({
             message: 'All data must be filled, please try again!',
         }), {
@@ -12,7 +58,28 @@ export async function POST({ request }) {
     }
 
     try {
-        // login sequence
+        const hashed = await hashPassword(account, password);
+
+        if (hashed !== env.PASSWORD_HASH) {
+            return new Response(JSON.stringify({
+                message: 'Invalid account id or password, please try again!',
+            }), {
+                status: import.meta.env.DEV ? 403 : 401,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+
+        const token = await signJWT({
+            exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION,
+        });
+
+        cookies.set('access_token', token, {
+            path: '/',
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: IS_SECURE,
+            maxAge: JWT_EXPIRATION,
+        });
 
         return new Response(JSON.stringify({
             message: 'Login success.',
@@ -29,9 +96,13 @@ export async function POST({ request }) {
     }
 }
 
-export async function DELETE() {
+export async function DELETE({ cookies }) {
     try {
-        // logout sequence
+        cookies.delete('access_token', {
+            path: '/',
+            httpOnly: true,
+            sameSite: 'strict',
+        });
 
         return new Response(JSON.stringify({
             message: 'Logout success.',

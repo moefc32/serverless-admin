@@ -1,9 +1,12 @@
 import { defineMiddleware } from 'astro:middleware';
+import { env } from 'cloudflare:workers';
 
-const PUBLIC_PATHS = [
-    '/login',
-    '/api/auth'
-];
+const UNAUTH_ROUTES = ['/login'];
+const PUBLIC_API_ROUTES = ['/api/auth'];
+
+function isRouteMatch(routes, path) {
+    return routes.some((route) => path.startsWith(route));
+}
 
 function getCookie(req, name) {
     const cookie = req.headers.get('cookie');
@@ -70,23 +73,26 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 
     if (
         url.pathname.startsWith('/_astro') ||
-        PUBLIC_PATHS.some((p) => url.pathname.startsWith(p))
+        isRouteMatch(PUBLIC_API_ROUTES, url.pathname)
     ) return next();
 
     const accessToken = getCookie(request, 'access_token');
 
-    if (!accessToken)
+    if (!accessToken && !isRouteMatch(UNAUTH_ROUTES, url.pathname))
         return Response.redirect(new URL('/login', request.url), 303);
 
-    try {
-        const secret = ctx.locals.runtime.env.JWT_SECRET;
-        const payload = await verifyJWT(accessToken, secret);
+    if (accessToken) {
+        try {
+            const payload = await verifyJWT(accessToken, env.JWT_SECRET);
+            ctx.locals.user = payload;
 
-        ctx.locals.user = payload;
-
-        return next();
-    } catch (e) {
-        console.error(e);
-        return Response.redirect(new URL('/login', request.url), 303);
+            if (isRouteMatch(UNAUTH_ROUTES, url.pathname))
+                return Response.redirect(new URL('/', request.url), 303);
+        } catch (e) {
+            console.error(e);
+            return Response.redirect(new URL('/login', request.url), 303);
+        }
     }
+
+    return next();
 });
