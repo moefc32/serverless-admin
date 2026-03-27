@@ -1,29 +1,9 @@
 import { env } from 'cloudflare:workers';
+import base64urlEncode from '../../lib/base64urlEncode';
+import hashPassword from '../../lib/hashPassword';
 
 const JWT_EXPIRATION = 60 * 60;
 const IS_SECURE = import.meta.env.PROD;
-
-function base64urlEncode(buffer) {
-    return btoa(String.fromCharCode(...new Uint8Array(buffer)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-}
-
-async function hashPassword(account, password, iterations = 100_000) {
-    const enc = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-        'raw', enc.encode(password),
-        { name: 'PBKDF2' }, false, ['deriveBits']
-    );
-    const bits = await crypto.subtle.deriveBits(
-        {
-            name: 'PBKDF2', salt: enc.encode(account),
-            iterations, hash: 'SHA-256'
-        }, key, 256);
-
-    return base64urlEncode(bits);
-}
 
 async function signJWT(payload) {
     const enc = new TextEncoder();

@@ -7,7 +7,12 @@ import tailwindcss from '@tailwindcss/vite';
 setMaxListeners(12);
 
 export default defineConfig({
-    adapter: cloudflare(),
+    adapter: cloudflare({
+        imageService: 'passthrough',
+        session: {
+            driver: 'memory',
+        },
+    }),
     output: 'server',
     vite: {
         plugins: [

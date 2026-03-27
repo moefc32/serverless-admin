@@ -1,9 +1,14 @@
 ---
 import '../styles/global.css';
 
+import Header from '../components/Header.svelte';
+import Footer from '../components/Footer.astro';
+
 const { pageTitle } = Astro.props;
+const { pathname } = Astro.url;
 
 const siteTitle = `${import.meta.env.PUBLIC_APP_NAME} - Faizal Chan's Website`;
+const isLoginPage = pathname === '/login';
 ---
 
 <!doctype html>
@@ -38,7 +43,9 @@ const siteTitle = `${import.meta.env.PUBLIC_APP_NAME} - Faizal Chan's Website`;
         data-theme="light"
     >
         <div style="display: contents">
+            {!isLoginPage && <Header client:only="svelte" />}
             <slot />
+            {!isLoginPage && <Footer />}
         </div>
     </body>
 </html>

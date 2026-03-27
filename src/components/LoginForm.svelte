@@ -4,6 +4,9 @@
     import { Toaster, toast } from 'svelte-sonner';
     import ky from 'ky';
 
+    const getYear = new Date().getFullYear();
+    const currentYear = (getYear > 2018 ? `2018 - ` : '') + getYear;
+
     let login = {
         account: '',
         password: '',
@@ -119,7 +122,7 @@
 <Toaster
     richColors
     theme="system"
-    position="bottom-right"
+    position="bottom-center"
     toastOptions={{
         style: 'font-size: 1rem;',
     }}
