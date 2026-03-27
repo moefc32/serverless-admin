@@ -1,25 +1,10 @@
 import { env } from 'cloudflare:workers';
 import base64urlEncode from '../../lib/base64urlEncode';
 import hashPassword from '../../lib/hashPassword';
+import verifyTurnstile from '../../lib/verifyTurnstile';
 
 const JWT_EXPIRATION = 60 * 60;
 const IS_SECURE = import.meta.env.PROD;
-
-async function verifyTurnstile(token, ip) {
-    const formData = new URLSearchParams();
-    formData.append('secret', env.GUARD_TS_SECRET);
-    formData.append('response', token);
-
-    if (ip) formData.append('remoteip', ip);
-
-    const response =
-        await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-            method: 'POST',
-            body: formData,
-        });
-
-    return response.json();
-}
 
 async function signJWT(payload) {
     const enc = new TextEncoder();
@@ -63,7 +48,7 @@ export async function POST({ cookies, request }) {
         });
     }
 
-    if (!(await verifyTurnstile(turnstileToken, ip))) {
+    if (!(await verifyTurnstile(turnstileToken, ip, env.GUARD_TS_SECRET))) {
         return new Response(JSON.stringify({
             message: 'Turnstile verification failed!',
         }), {
