@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte';
+    import { LogOut } from 'lucide-svelte';
     import { Toaster, toast } from 'svelte-sonner';
     import ky from 'ky';
 
@@ -52,10 +53,8 @@
             <a href="/url-shortener">URL Shortener</a>
             <!-- <a href="/wedding">Wedding</a> -->
             <a href="/settings">Settings</a>
-            <button
-                class="btn btn-outline btn-primary"
-                on:click={() => doLogout()}
-            >
+            <button class="btn btn-primary" on:click={() => doLogout()}>
+                <LogOut size={14} />
                 Logout
             </button>
         </nav>

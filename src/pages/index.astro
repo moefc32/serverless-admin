@@ -1,16 +1,88 @@
 ---
+// @ts-nocheck
+import { env } from 'cloudflare:workers';
 import ky from 'ky';
 import datePrettier from '../lib/datePrettier';
 
 import Layout from '../layouts/Layout.astro';
+import WorkerStats from '../components/WorkerStats.svelte';
 
 const pageTitle = 'Dashboard';
+const TARGET_WORKERS =
+    typeof env.TARGET_WORKERS === 'string'
+        ? JSON.parse(env.TARGET_WORKERS)
+        : env.TARGET_WORKERS;
+
+const query = `query GetSpecificStats($accountTag: String!, $workers: [String!], $date: String!, $limit: Int!) {
+    viewer {
+        accounts(filter: {accountTag: $accountTag}) {
+            workersInvocationsAdaptive(
+                limit: $limit,
+                filter: { 
+                    scriptName_in: $workers, 
+                    datetime_geq: $date 
+                }
+            ) {
+                dimensions { scriptName }
+                sum { requests, errors }
+                quantiles { cpuTimeP90 }
+            }
+        }
+    }
+}`;
+
+let workers = [];
+
+try {
+    const res = await ky
+        .post('https://api.cloudflare.com/client/v4/graphql', {
+            headers: { Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}` },
+            json: {
+                query,
+                variables: {
+                    accountTag: env.CLOUDFLARE_ACCOUNT_ID,
+                    workers: TARGET_WORKERS,
+                    date: new Date(Date.now() - 86400000).toISOString(),
+                    limit: TARGET_WORKERS.length || 1,
+                },
+            },
+        })
+        .json();
+
+    const datasets =
+        res.data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive || [];
+
+    workers = TARGET_WORKERS.map(name => {
+        const data = datasets.find(d => d.dimensions.scriptName === name);
+        if (!data) return { name, successRate: '0', cpu: 0, inactive: true };
+
+        const rawRate =
+            ((data.sum.requests - data.sum.errors) / (data.sum.requests || 1)) *
+            100;
+
+        const formattedRate =
+            rawRate === 100 || rawRate === 0
+                ? rawRate.toString()
+                : rawRate.toFixed(2);
+
+        return {
+            name,
+            successRate: formattedRate,
+            cpu: Number(((data.quantiles.cpuTimeP90 || 0) / 1000).toFixed(3)),
+            inactive: false,
+        };
+    });
+} catch (e) {
+    console.error('Multi-fetch Error:', e.message);
+}
 ---
 
 <Layout {pageTitle}>
     <main class="flex flex-1 flex-col gap-9 mx-12 my-6 pt-[100px]">
-        <div class="flex flex-col gap-3">
-            <span class="italic">- under development -</span>
-        </div>
+        <WorkerStats
+            workerCount={TARGET_WORKERS.length}
+            {workers}
+            client:only="svelte"
+        />
     </main>
 </Layout>

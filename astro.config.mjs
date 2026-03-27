@@ -12,6 +12,9 @@ export default defineConfig({
         session: {
             driver: 'memory',
         },
+        platformProxy: {
+            enabled: true,
+        },
     }),
     output: 'server',
     vite: {

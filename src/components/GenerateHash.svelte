@@ -50,7 +50,7 @@
     </label>
     <input
         type="text"
-        class="input input-md w-full max-w-100"
+        class="input input-md bg-gray-100 w-full max-w-100"
         placeholder="Generated hash"
         readonly
         bind:value={hash.output}
