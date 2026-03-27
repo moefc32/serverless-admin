@@ -52,12 +52,6 @@
             toast[toastData.state](toastData.message);
             localStorage.removeItem('toast');
         }
-
-        try {
-        } catch (e) {
-            console.error(e);
-            toast.error('Cannot fetch data, please try again later!');
-        }
     });
 </script>
 

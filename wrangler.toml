@@ -7,6 +7,9 @@ preview_urls = false
 [observability.logs]
 enabled = true
 
+[vars]
+TARGET_WORKERS = '["serverless-admin", "serverless-code", "serverless-design", "serverless-research"]'
+
 [[kv_namespaces]]
 binding = "KV_CACHE"
 id = "858b94a615824cf5a71a0e0ae0df3da0"
