@@ -1,10 +1,14 @@
 ---
+// @ts-nocheck
+import { env } from 'cloudflare:workers';
+
 import Layout from '../layouts/Layout.astro';
 import LoginForm from '../components/LoginForm.svelte';
 
 const pageTitle = 'Login';
+const turnstileKey = env.GUARD_TS_PUBLIC;
 ---
 
 <Layout {pageTitle}>
-    <LoginForm client:only="svelte" />
+    <LoginForm {turnstileKey} client:only="svelte" />
 </Layout>

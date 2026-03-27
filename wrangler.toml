@@ -8,6 +8,7 @@ preview_urls = false
 enabled = true
 
 [vars]
+GUARD_TS_PUBLIC = '0x4AAAAAAATBhcQo_QNY5_3N'
 TARGET_WORKERS = '["serverless-admin", "serverless-code", "serverless-design", "serverless-research"]'
 
 [[kv_namespaces]]

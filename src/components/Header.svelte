@@ -12,7 +12,7 @@
                 'toast',
                 JSON.stringify({
                     state: 'success',
-                    message: 'You are now logged out',
+                    message: 'You are now logged out.',
                 }),
             );
             window.location.assign('/login');

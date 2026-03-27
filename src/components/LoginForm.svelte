@@ -4,8 +4,7 @@
     import { Toaster, toast } from 'svelte-sonner';
     import ky from 'ky';
 
-    const getYear = new Date().getFullYear();
-    const currentYear = (getYear > 2018 ? `2018 - ` : '') + getYear;
+    export let turnstileKey;
 
     let login = {
         account: '',
@@ -13,6 +12,8 @@
         loading: false,
     };
     let showPassword = false;
+    let turnstile;
+    let turnstileToken = '';
 
     async function handleKeydown(event) {
         if (event.key === 'Enter' && login.account && login.password) {
@@ -24,15 +25,24 @@
         try {
             login.loading = true;
 
+            if (!turnstileToken) {
+                if (window.turnstile) window.turnstile.execute(turnstile);
+
+                return;
+            }
+
             await ky.post('/api/auth', {
-                json: login,
+                json: {
+                    ...login,
+                    'cf-turnstile-response': turnstileToken,
+                },
             });
 
             localStorage.setItem(
                 'toast',
                 JSON.stringify({
                     state: 'success',
-                    message: 'You have successfully logged in',
+                    message: 'You have successfully logged in.',
                 }),
             );
             window.location.assign('/');
@@ -41,6 +51,9 @@
 
             console.error(e);
             toast.error('Login failed, please check all data and try again!');
+
+            if (window.turnstile) window.turnstile.reset();
+            turnstileToken = '';
         }
     }
 
@@ -52,11 +65,21 @@
             toast[toastData.state](toastData.message);
             localStorage.removeItem('toast');
         }
+
+        if (window.turnstile) {
+            window.turnstile.render(turnstile, {
+                sitekey: turnstileKey,
+                size: 'normal',
+                callback: token => {
+                    turnstileToken = token;
+                },
+            });
+        }
     });
 </script>
 
 <main
-    class="card flex flex-col gap-2 m-auto p-6 bg-white w-full max-w-[320px] shadow-2xl"
+    class="card flex flex-col gap-2 m-auto p-6 bg-white w-full max-w-[345px] shadow-2xl"
 >
     <h1 class="my-2 text-3xl text-center">Login</h1>
     <input
@@ -99,8 +122,11 @@
             </button>
         {/if}
     </label>
+    <div class="flex justify-center rounded-md overflow-hidden">
+        <div bind:this={turnstile}></div>
+    </div>
     <button
-        class="btn btn-primary mt-2"
+        class="btn btn-primary"
         title="Login to application"
         disabled={!login.account || !login.password || login.loading}
         on:click={() => doLogin()}

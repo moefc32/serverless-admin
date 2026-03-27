@@ -5,6 +5,22 @@ import hashPassword from '../../lib/hashPassword';
 const JWT_EXPIRATION = 60 * 60;
 const IS_SECURE = import.meta.env.PROD;
 
+async function verifyTurnstile(token, ip) {
+    const formData = new URLSearchParams();
+    formData.append('secret', env.GUARD_TS_SECRET);
+    formData.append('response', token);
+
+    if (ip) formData.append('remoteip', ip);
+
+    const response =
+        await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            body: formData,
+        });
+
+    return response.json();
+}
+
 async function signJWT(payload) {
     const enc = new TextEncoder();
     const header = { alg: 'HS256', typ: 'JWT' };
@@ -25,14 +41,33 @@ async function signJWT(payload) {
 }
 
 export async function POST({ cookies, request }) {
+    const ip = request.headers.get('CF-Connecting-IP');
     const body = await request.json();
-    const { account, password } = body;
+    const { account, password, 'cf-turnstile-response': turnstileToken } = body;
 
     if (!account || !password) {
         return new Response(JSON.stringify({
             message: 'All data must be filled, please try again!',
         }), {
             status: 400,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    if (!turnstileToken) {
+        return new Response(JSON.stringify({
+            message: 'Turnstile verification required!',
+        }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    if (!(await verifyTurnstile(turnstileToken, ip))) {
+        return new Response(JSON.stringify({
+            message: 'Turnstile verification failed!',
+        }), {
+            status: 403,
             headers: { 'Content-Type': 'application/json' },
         });
     }
