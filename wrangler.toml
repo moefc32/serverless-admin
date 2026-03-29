@@ -1,7 +1,7 @@
 name = "serverless-admin"
 account_id = "68dca54a44bd4d964f21406a2a290007"
 compatibility_date = "2025-06-25"
-workers_dev = true
+workers_dev = false
 preview_urls = false
 
 [observability.logs]

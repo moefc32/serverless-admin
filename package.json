@@ -12,16 +12,17 @@
     "devDependencies": {
         "@tailwindcss/vite": "^4.2.2",
         "daisyui": "^5.5.19",
-        "tailwindcss": "^4.2.2"
+        "tailwindcss": "^4.2.2",
+        "wrangler": "^4.81.1"
     },
     "dependencies": {
-        "@astrojs/cloudflare": "^13.1.4",
+        "@astrojs/cloudflare": "^13.1.8",
         "@astrojs/svelte": "^8.0.4",
         "@fontsource-variable/noto-sans": "^5.2.10",
-        "astro": "^6.1.1",
+        "astro": "^6.1.5",
         "ky": "^1.14.3",
         "lucide-svelte": "^0.563.0",
-        "svelte": "^5.55.0",
+        "svelte": "^5.55.3",
         "svelte-sonner": "^1.1.0"
     },
     "pnpm": {

@@ -39,9 +39,9 @@
     });
 </script>
 
-<header class="fixed px-6 py-[15px] top-0 left-0 w-full z-1000">
+<header class="fixed px-6 py-4 top-0 left-0 w-full z-1200">
     <div
-        class="flex justify-center items-center px-6 h-[70px] bg-white/85 border-1 border-gray-300 rounded-xl shadow-lg backdrop-blur-xs"
+        class="flex justify-center items-center px-6 h-18 bg-white/85 border-1 border-gray-300 rounded-xl shadow-lg backdrop-blur-xs"
     >
         <a
             href="/"
