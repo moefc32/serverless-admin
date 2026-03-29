@@ -4,6 +4,8 @@
     import { Toaster, toast } from 'svelte-sonner';
     import ky from 'ky';
 
+    import TurnstileWidget from './TurnstileWidget.svelte';
+
     export let turnstileKey;
 
     let login = {
@@ -13,10 +15,16 @@
     };
     let showPassword = false;
     let turnstile;
+    let turnstileLoading = true;
     let turnstileToken = '';
 
     async function handleKeydown(event) {
-        if (event.key === 'Enter' && login.account && login.password) {
+        if (
+            event.key === 'Enter' &&
+            login.account &&
+            login.password &&
+            !turnstileLoading
+        ) {
             doLogin();
         }
     }
@@ -27,7 +35,6 @@
 
             if (!turnstileToken) {
                 if (window.turnstile) window.turnstile.execute(turnstile);
-
                 return;
             }
 
@@ -52,8 +59,12 @@
             console.error(e);
             toast.error('Login failed, please check all data and try again!');
 
-            if (window.turnstile) window.turnstile.reset();
-            turnstileToken = '';
+            if (window.turnstile) {
+                window.turnstile.reset();
+
+                turnstileToken = '';
+                turnstileLoading = true;
+            }
         }
     }
 
@@ -65,21 +76,11 @@
             toast[toastData.state](toastData.message);
             localStorage.removeItem('toast');
         }
-
-        if (window.turnstile) {
-            window.turnstile.render(turnstile, {
-                sitekey: turnstileKey,
-                size: 'normal',
-                callback: token => {
-                    turnstileToken = token;
-                },
-            });
-        }
     });
 </script>
 
 <main
-    class="card flex flex-col gap-2 m-auto p-6 bg-white w-full max-w-[345px] shadow-2xl"
+    class="card flex flex-col gap-2 m-auto p-6 bg-white w-full max-w-80 shadow-2xl"
 >
     <h1 class="my-2 text-3xl text-center">Login</h1>
     <input
@@ -99,7 +100,7 @@
                 on:keydown={handleKeydown}
             />
             <button
-                class="-ms-8 text-black z-[100] cursor-pointer"
+                class="-ms-8 text-black z-10 cursor-pointer"
                 title="Click to show password"
                 on:click={() => (showPassword = !showPassword)}
             >
@@ -114,7 +115,7 @@
                 on:keydown={handleKeydown}
             />
             <button
-                class="-ms-8 text-black z-[100] cursor-pointer"
+                class="-ms-8 text-black z-10 cursor-pointer"
                 title="Click to hide password"
                 on:click={() => (showPassword = !showPassword)}
             >
@@ -122,13 +123,19 @@
             </button>
         {/if}
     </label>
-    <div class="flex justify-center rounded-md overflow-hidden">
-        <div bind:this={turnstile}></div>
-    </div>
+    <TurnstileWidget
+        bind:turnstile
+        {turnstileKey}
+        bind:turnstileToken
+        bind:turnstileLoading
+    />
     <button
         class="btn btn-primary"
         title="Login to application"
-        disabled={!login.account || !login.password || login.loading}
+        disabled={!login.account ||
+            !login.password ||
+            login.loading ||
+            turnstileLoading}
         on:click={() => doLogin()}
     >
         {#if login.loading}
