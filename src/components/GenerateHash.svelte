@@ -1,5 +1,5 @@
 <script>
-    import { Check } from 'lucide-svelte';
+    import { Check } from '@lucide/svelte';
     import hashPassword from '../lib/hashPassword';
 
     let hash = {
