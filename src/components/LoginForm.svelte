@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { Eye, EyeOff, LogIn } from 'lucide-svelte';
+    import { Eye, EyeOff, LogIn } from '@lucide/svelte';
     import { Toaster, toast } from 'svelte-sonner';
     import ky from 'ky';
 

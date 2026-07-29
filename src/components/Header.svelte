@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { LogOut } from 'lucide-svelte';
+    import { LogOut } from '@lucide/svelte';
     import { Toaster, toast } from 'svelte-sonner';
     import ky from 'ky';
 
