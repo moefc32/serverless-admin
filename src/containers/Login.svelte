@@ -4,7 +4,7 @@
     import { Toaster, toast } from 'svelte-sonner';
     import ky from 'ky';
 
-    import TurnstileWidget from './TurnstileWidget.svelte';
+    import TurnstileWidget from '../components/TurnstileWidget.svelte';
 
     export let turnstileKey;
 

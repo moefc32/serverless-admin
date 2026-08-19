@@ -4,6 +4,25 @@
     import { Toaster, toast } from 'svelte-sonner';
     import ky from 'ky';
 
+    const navigations = [
+        {
+            label: 'URL Shortener',
+            path: '/url-shortener',
+        },
+        {
+            label: 'Email Blacklist',
+            path: '/email-blacklist',
+        },
+        // {
+        //     label: 'Wedding',
+        //     path: '/wedding',
+        // },
+        {
+            label: 'Settings',
+            path: '/settings',
+        },
+    ];
+
     async function doLogout() {
         try {
             await ky.delete('/api/auth');
@@ -50,9 +69,9 @@
             {import.meta.env.PUBLIC_APP_NAME}
         </a>
         <nav class="flex items-center gap-6">
-            <a href="/url-shortener">URL Shortener</a>
-            <!-- <a href="/wedding">Wedding</a> -->
-            <a href="/settings">Settings</a>
+            {#each navigations as item, i}
+                <a href={item.path}>{item.label}</a>
+            {/each}
             <button class="btn btn-primary" on:click={() => doLogout()}>
                 <LogOut size={14} />
                 Logout

@@ -3,12 +3,12 @@
 import { env } from 'cloudflare:workers';
 
 import Layout from '../layouts/Layout.astro';
-import LoginForm from '../components/LoginForm.svelte';
+import Container from '../containers/Login.svelte';
 
 const pageTitle = 'Login';
 const turnstileKey = env.GUARD_TS_PUBLIC;
 ---
 
 <Layout {pageTitle}>
-    <LoginForm {turnstileKey} client:only="svelte" />
+    <Container {turnstileKey} client:only="svelte" />
 </Layout>
