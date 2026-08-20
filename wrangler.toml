@@ -16,7 +16,7 @@ binding = "KV_CACHE"
 id = "858b94a615824cf5a71a0e0ae0df3da0"
 
 [[d1_databases]]
-binding = "D1_EMAIL"
+binding = "D1_DATABASE"
 database_name = "mfc-website"
 database_id = "76214d95-18a7-4a65-aa40-22415b7ce1bb"
 remote = true
