@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { asc, desc, eq } from 'drizzle-orm';
 import * as schema from '../schema';
 
-const { EmailBlacklist } = schema;
+const { UrlShortener } = schema;
 
 export default {
     getData: async (env) => {
@@ -10,14 +10,15 @@ export default {
             const db = drizzle(env.D1_DATABASE, { schema });
             const result = await db
                 .select({
-                    address: EmailBlacklist.address,
-                    hit: EmailBlacklist.hit,
-                    note: EmailBlacklist.note,
+                    title: UrlShortener.title,
+                    shortUrl: UrlShortener.shortUrl,
+                    longUrl: UrlShortener.longUrl,
+                    hit: UrlShortener.hit,
                 })
-                .from(EmailBlacklist)
+                .from(UrlShortener)
                 .orderBy(
-                    desc(EmailBlacklist.hit),
-                    asc(EmailBlacklist.address)
+                    asc(UrlShortener.title),
+                    asc(UrlShortener.shortUrl)
                 );
 
             return result;
@@ -30,9 +31,11 @@ export default {
         try {
             const db = drizzle(env.D1_DATABASE, { schema });
             const [result] = await db
-                .insert(EmailBlacklist)
+                .insert(UrlShortener)
                 .values({
-                    address: data,
+                    title: data.title,
+                    shortUrl: data.shortUrl,
+                    longUrl: data.longUrl,
                 })
                 .returning();
 
@@ -42,17 +45,17 @@ export default {
             throw new Error('Error when creating data!');
         }
     },
-    editData: async (env, data, address) => {
+    editData: async (env, data, shortUrl) => {
         try {
             const db = drizzle(env.D1_DATABASE, { schema });
             const [result] = await db
-                .update(EmailBlacklist)
+                .update(UrlShortener)
                 .set({
-                    address: data.address ?? undefined,
-                    hit: data.hit ?? undefined,
-                    note: data.note ?? undefined,
+                    title: data.title ?? undefined,
+                    shortUrl: data.shortUrl ?? undefined,
+                    longUrl: data.longUrl ?? undefined,
                 })
-                .where(eq(EmailBlacklist.address, address))
+                .where(eq(UrlShortener.shortUrl, shortUrl))
                 .returning();
 
             return result;
@@ -61,12 +64,12 @@ export default {
             throw new Error('Error when updating data!');
         }
     },
-    deleteData: async (env, address) => {
+    deleteData: async (env, shortUrl) => {
         try {
             const db = drizzle(env.D1_DATABASE, { schema });
             const result = await db
-                .delete(EmailBlacklist)
-                .where(eq(EmailBlacklist.address, address));
+                .delete(UrlShortener)
+                .where(eq(UrlShortener.shortUrl, shortUrl));
 
             return result;
         } catch (e) {
