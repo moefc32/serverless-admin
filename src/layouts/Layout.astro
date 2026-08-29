@@ -16,7 +16,7 @@ const isLoginPage = pathname === '/login';
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" type="image/png" href="/og.png" />
+        <link rel="icon" type="image/svg+xml" href="res/favicon.svg" />
 
         <title>
             {pageTitle ? `${pageTitle} | ${siteTitle}` : siteTitle}
@@ -28,20 +28,6 @@ const isLoginPage = pathname === '/login';
             async
             defer></script>
         <link rel="preconnect" href="https://challenges.cloudflare.com" />
-
-        <script
-            src="https://www.googletagmanager.com/gtag/js?id=UA-131278165-1"
-            async></script>
-        <script is:inline>
-            window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-
-            gtag('js', new Date());
-            gtag('config', 'UA-131278165-1');
-        </script>
     </head>
 
     <body

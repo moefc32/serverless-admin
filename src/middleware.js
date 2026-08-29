@@ -2,10 +2,12 @@ import { defineMiddleware } from 'astro:middleware';
 import { env } from 'cloudflare:workers';
 
 const UNAUTH_ROUTES = ['/login'];
-const PUBLIC_API_ROUTES = ['/api/auth'];
+const PUBLIC_ROUTES = ['/_astro', '/api/auth', '/res'];
 
 function isRouteMatch(routes, path) {
-    return routes.some((route) => path.startsWith(route));
+    return routes.some(
+        (route) => path === route || path.startsWith(`${route}/`)
+    );
 }
 
 function getCookie(req, name) {
@@ -71,10 +73,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
     const request = ctx.request;
     const url = new URL(request.url);
 
-    if (
-        url.pathname.startsWith('/_astro') ||
-        isRouteMatch(PUBLIC_API_ROUTES, url.pathname)
-    ) return next();
+    if (isRouteMatch(PUBLIC_ROUTES, url.pathname)) return next();
 
     const accessToken = getCookie(request, 'access_token');
 
