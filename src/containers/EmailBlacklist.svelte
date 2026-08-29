@@ -191,7 +191,7 @@
                 {:else}
                     <tr>
                         <td class="py-12 text-gray-500 text-center" colspan="5">
-                            - No blocked email found -
+                            - No blacklisted address found -
                         </td>
                     </tr>
                 {/if}

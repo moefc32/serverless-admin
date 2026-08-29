@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link rel="icon" type="image/svg+xml" href="res/favicon.svg" />
+        <title>
+            Not Found | {import.meta.env.PUBLIC_APP_NAME} - Faizal Chan's Website
+        </title>
+
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                min-height: 100dvh;
+                margin: 0;
+                padding: 50px;
+                background: #121212;
+                color: #fff;
+                font-family: sans-serif;
+            }
+
+            main {
+                display: flex;
+                flex: 1;
+                flex-direction: column;
+                justify-content: center;
+                align-items: stretch;
+                gap: 24px;
+                width: 100%;
+                max-width: 640px;
+                padding: 16px;
+                font-size: 18px;
+                line-height: 1.35em;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 32px;
+                line-height: 1.25em;
+                text-transform: uppercase;
+            }
+
+            article {
+                color: #9ca3af;
+            }
+
+            p {
+                margin: 0 0 24px;
+                min-height: 1.35em;
+            }
+
+            a {
+                color: #e5e7eb;
+            }
+
+            [data-copyright] {
+                position: relative;
+                padding-left: 1.5em;
+            }
+
+            [data-copyright]::before {
+                content: '';
+                position: absolute;
+                width: 1.25em;
+                height: 1.25em;
+                top: 50%;
+                left: 0;
+                background: #9ca3af;
+                mask: url(/res/cloudbranch.svg) center / contain no-repeat;
+                -webkit-mask: url(/res/cloudbranch.svg) center / contain
+                    no-repeat;
+                transform: translateY(-50%);
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            <h1>This path leads nowhere</h1>
+            <article>
+                <p>
+                    The destination you were looking for could not be found.
+                    Perhaps the route has gone quiet, or perhaps there was never
+                    a world there to begin with.
+                </p>
+                <p data-copyright>
+                    <a href="https://mf-chan.com">Mfc</a> &copy;
+                </p>
+            </article>
+        </main>
+
+        <script>
+            const getYear = new Date().getFullYear();
+            const currentYear = (getYear > 2018 ? `2018 - ` : '') + getYear;
+
+            document
+                .querySelector('[data-copyright]')
+                .append(` ${currentYear}`);
+        </script>
+    </body>
+</html>
