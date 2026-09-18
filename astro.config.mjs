@@ -1,10 +1,7 @@
-import { setMaxListeners } from 'events';
 import { defineConfig } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import svelte from '@astrojs/svelte';
 import tailwindcss from '@tailwindcss/vite';
-
-setMaxListeners(12);
 
 export default defineConfig({
     output: 'server',
@@ -14,9 +11,7 @@ export default defineConfig({
             enabled: true,
         },
     }),
-    session: {
-        driver: 'null',
-    },
+    session: false,
     vite: {
         plugins: [
             tailwindcss(),
